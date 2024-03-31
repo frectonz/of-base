@@ -9,7 +9,8 @@ let make = (
 
   <div className="w-full grid grid-cols-1">
     <label> {React.string(name)} </label>
-    <select name className="px-4 py-2" value={Encoding.to_string(value)} onChange>
+    <select
+      name className="px-4 py-2 bg-black text-white" value={Encoding.to_string(value)} onChange>
       {options->Array.map(x => <option key={x}> {React.string(x)} </option>)->React.array}
     </select>
   </div>
