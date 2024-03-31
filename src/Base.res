@@ -10,7 +10,7 @@ module type Base = {
   let encoding: Encoding.t
 }
 
-module Decimal = {
+module Decimal: Base = {
   type t = int
 
   let from_string = n => Int.fromString(n)
@@ -22,12 +22,48 @@ module Decimal = {
   let encoding = Encoding.Decimal
 }
 
+module Binary: Base = {
+  type t = int
+
+  let from_string = n => Int.fromString(n, ~radix=2)
+  let to_string = n => Int.toStringWithRadix(n, ~radix=2)
+
+  let from_decimal = n => n
+  let to_decimal = n => n
+
+  let encoding = Encoding.Binary
+}
+
+module Octal: Base = {
+  type t = int
+
+  let from_string = n => Int.fromString(n, ~radix=8)
+  let to_string = n => Int.toStringWithRadix(n, ~radix=8)
+
+  let from_decimal = n => n
+  let to_decimal = n => n
+
+  let encoding = Encoding.Octal
+}
+
+module Hex: Base = {
+  type t = int
+
+  let from_string = n => Int.fromString(n, ~radix=16)
+  let to_string = n => Int.toStringWithRadix(n, ~radix=16)
+
+  let from_decimal = n => n
+  let to_decimal = n => n
+
+  let encoding = Encoding.Hex
+}
+
 let from_encoding: Encoding.t => module(Base) = t =>
   switch t {
   | Encoding.Decimal => module(Decimal)
-  | Encoding.Binary => failwith("no binary")
-  | Encoding.Octal => failwith("no octal")
-  | Encoding.Hex => failwith("no hex")
+  | Encoding.Binary => module(Binary)
+  | Encoding.Octal => module(Octal)
+  | Encoding.Hex => module(Hex)
   }
 
 module MakeInput = (B: Base) => {
@@ -37,7 +73,7 @@ module MakeInput = (B: Base) => {
     let value = value->Option.map(B.to_string)->Option.getOr("")
 
     <div className="flex w-full">
-      <input className="px-4 py-2 border border-black flex-1" value onChange />
+      <input autoFocus={true} className="px-4 py-2 border border-black flex-1" value onChange />
       <span className="bg-black text-white px-2 h-full flex justify-center items-center text-xs">
         {B.encoding->Encoding.to_symbol->React.string}
       </span>

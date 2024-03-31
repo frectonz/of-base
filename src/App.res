@@ -3,6 +3,12 @@ let make = () => {
   let (from, setFrom) = React.useState(_ => Encoding.Decimal)
   let (to, setTo) = React.useState(_ => Encoding.Binary)
 
+  let swap = _ => {
+    let (new_from, new_to) = (to, from)
+    setFrom(_ => new_from)
+    setTo(_ => new_to)
+  }
+
   let from_options = Encoding.options->Array.filter(x => x != to)->Encoding.to_strings
   let to_options = Encoding.options->Array.filter(x => x != from)->Encoding.to_strings
 
@@ -19,6 +25,8 @@ let make = () => {
     (option<InputBase.t> => option<InputBase.t>) => unit,
   ) = React.useState(_ => None)
 
+  let reset = _ => setInput(_ => None)
+
   <div className="p-6 max-w-[800px]">
     <h1 className="text-3xl font-semibold"> {React.string(title)} </h1>
     <div className="my-4 grid grid-cols-2 gap-4">
@@ -31,9 +39,12 @@ let make = () => {
       </label>
       <Input value={input} on_change={i => setInput(_ => i)} />
       <div className="flex gap-2">
-        <button className="px-4 py-2 bg-black text-white"> {React.string("Convert")} </button>
-        <button className="px-4 py-2 border border-black"> {React.string("Reset")} </button>
-        <button className="px-4 py-2 border border-black"> {React.string("Swap")} </button>
+        <button className="px-4 py-2 border border-black" onClick={reset}>
+          {React.string("Reset")}
+        </button>
+        <button className="px-4 py-2 border border-black" onClick={swap}>
+          {React.string("Swap")}
+        </button>
       </div>
     </div>
     <Output value={input->Option.map(InputBase.to_decimal)} />
